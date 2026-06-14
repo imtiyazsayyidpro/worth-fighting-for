@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PartnershipStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum Speaker {
+  USER_A
+  USER_B
+  BOTH
+  MEDIATOR
+}
+
+enum SenderType {
+  USER
+  MEDIATOR
+  SYSTEM
+}
+
+model User {
+  id                      String    @id @default(cuid())
+  email                   String    @unique
+  passwordHash            String
+  displayName             String
+  emailVerified           Boolean   @default(false)
+  emailVerificationToken  String?
+  emailVerificationExpiry DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  partnershipsAsA Partnership[] @relation("PartnershipUserA")
+  partnershipsAsB Partnership[] @relation("PartnershipUserB")
+  messages        Message[]
+  memories        UserMemory[]
+}
+
+model Partnership {
+  id        String            @id @default(cuid())
+  userAId   String
+  userBId   String
+  status    PartnershipStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  userA    User      @relation("PartnershipUserA", fields: [userAId], references: [id])
+  userB    User      @relation("PartnershipUserB", fields: [userBId], references: [id])
+  sessions Session[]
+
+  @@unique([userAId, userBId])
+}
+
+model Session {
+  id             String        @id @default(cuid())
+  partnershipId  String
+  status         SessionStatus @default(ACTIVE)
+  currentSpeaker Speaker       @default(USER_A)
+  currentPhase   String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  partnership Partnership @relation(fields: [partnershipId], references: [id])
+  messages    Message[]
+}
+
+model Message {
+  id         String     @id @default(cuid())
+  sessionId  String
+  senderType SenderType
+  senderId   String?
+  content    String
+  phase      String?
+  createdAt  DateTime   @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id])
+  sender  User?   @relation(fields: [senderId], references: [id])
+}
+
+model UserMemory {
+  id        String   @id @default(cuid())
+  userId    String
+  fact      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}

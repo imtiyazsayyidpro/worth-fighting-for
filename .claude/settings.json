@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest add form -y --reinstall)",
+      "Bash(npx shadcn@latest add form -y)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npx shadcn@latest view form)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); i=d[0]; print\\('deps:',i.get\\('dependencies'\\)\\); print\\('regDeps:',i.get\\('registryDependencies'\\)\\); print\\('files:',[f.get\\('path'\\) for f in i.get\\('files',[]\\)]\\)\")",
+      "Bash(ls node_modules/@base-ui* -d)",
+      "Bash(ls node_modules/@radix-ui)",
+      "Bash(ls node_modules/@radix-ui/react-slot)",
+      "Bash(ls node_modules/@base-ui/react/field)",
+      "Bash(ls node_modules/@base-ui-components)",
+      "Bash(ls node_modules/react-hook-form)",
+      "Bash(ls node_modules/@hookform/resolvers)",
+      "Bash(npm install *)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -o /tmp/wff-home.html -w \"%{http_code}\" http://localhost:3000/)",
+      "Read(//tmp/**)"
+    ]
+  }
+}
