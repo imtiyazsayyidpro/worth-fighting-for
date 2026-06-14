@@ -1,7 +1,5 @@
-import { Heart, Sparkles } from "lucide-react";
-
+import { Orb } from "@/components/layout/brand-mark";
 import type { SessionMessage } from "@/lib/sessions/messages";
-import { cn, formatTime } from "@/lib/utils";
 
 type MessageListProps = {
   messages: SessionMessage[];
@@ -16,103 +14,96 @@ export function MessageList({
   partnerName,
   mediatorThinking = false,
 }: MessageListProps) {
-  if (messages.length === 0 && !mediatorThinking) {
+  // Welcome / first moment
+  if (messages.length === 0) {
     return (
-      <div className="flex min-h-[60dvh] flex-col items-center justify-center gap-4 text-center">
-        <span className="inline-flex size-16 items-center justify-center rounded-3xl bg-linear-to-br from-primary to-secondary text-primary-foreground shadow-romantic">
-          <Heart className="size-7 fill-current" aria-hidden />
-        </span>
-        <div className="space-y-1.5">
-          <p className="font-heading text-2xl font-semibold text-foreground">
-            You&rsquo;re in a safe space
-          </p>
-          <p className="mx-auto max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Take a breath. Share what&rsquo;s on your heart, and your mediator
-            will help you and {partnerName} truly hear each other.
-          </p>
-        </div>
+      <div className="animate-fade flex flex-1 flex-col items-center justify-center px-2.5 py-8 text-center">
+        <Orb size={88} className="animate-drift mb-[30px]" />
+        <h2 className="max-w-[360px] font-heading text-[28px] leading-[1.25]">
+          You&rsquo;re both here. That already matters.
+        </h2>
+        <p className="mx-auto mt-3.5 max-w-[340px] text-[15.5px] leading-[1.7] text-muted-foreground">
+          Take a slow breath. There&rsquo;s no rush and nothing to win here —
+          only the two of you, finding your way back. When you&rsquo;re ready,
+          share what&rsquo;s been sitting with you.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex min-h-full flex-col justify-end gap-8">
       {messages.map((message) => {
         if (message.senderType === "MEDIATOR") {
           return (
-            <article className="flex flex-col items-center gap-1.5" key={message.id}>
-              <div className="max-w-[min(92%,46rem)] rounded-3xl border border-primary/15 bg-linear-to-br from-primary/10 to-secondary/15 px-5 py-4 text-sm leading-relaxed text-foreground shadow-romantic">
-                <div className="mb-2 flex items-center justify-center gap-1.5 text-xs font-medium tracking-wide text-primary uppercase">
-                  <Sparkles className="size-3.5" aria-hidden />
-                  Mediator
-                </div>
-                <p className="whitespace-pre-wrap break-words text-center">
-                  {message.content}
-                </p>
+            <div
+              key={message.id}
+              className="animate-rise mx-auto max-w-[520px] px-1.5 py-2 text-center"
+            >
+              <Orb size={24} className="mx-auto mb-3" />
+              <div className="whitespace-pre-wrap font-heading text-[19px] leading-[1.5]">
+                {message.content}
               </div>
-              <p className="text-xs text-muted-foreground/80">
-                {formatTime(message.createdAt)}
-              </p>
-            </article>
+            </div>
           );
         }
 
         const isCurrentUser = message.senderId === currentUserId;
 
-        return (
-          <article
-            className={cn(
-              "flex flex-col gap-1",
-              isCurrentUser ? "items-end" : "items-start",
-            )}
-            key={message.id}
-          >
+        if (isCurrentUser) {
+          return (
             <div
-              className={cn(
-                "max-w-[min(82%,42rem)] px-4 py-2.5 text-sm leading-relaxed shadow-sm",
-                isCurrentUser
-                  ? "rounded-3xl rounded-br-md bg-primary text-primary-foreground"
-                  : "rounded-3xl rounded-bl-md border border-border/60 bg-card text-foreground",
-              )}
+              key={message.id}
+              className="animate-rise max-w-[78%] self-end"
             >
-              <p className="whitespace-pre-wrap break-words">
+              <div className="mb-1.5 mr-1 text-right text-[10.5px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+                You
+              </div>
+              <div className="whitespace-pre-wrap rounded-[18px_6px_18px_18px] bg-you-bub px-4 py-3 text-[14.5px] leading-snug text-you-ink">
                 {message.content}
-              </p>
+              </div>
             </div>
-            <p className="px-1 text-xs text-muted-foreground/80">
-              {isCurrentUser
-                ? "You"
-                : (message.senderDisplayName ?? partnerName)}{" "}
-              · {formatTime(message.createdAt)}
-            </p>
-          </article>
+          );
+        }
+
+        return (
+          <div key={message.id} className="animate-rise max-w-[78%] self-start">
+            <div className="mb-1.5 ml-1 text-[10.5px] font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+              {message.senderDisplayName ?? partnerName}
+            </div>
+            <div className="whitespace-pre-wrap rounded-[6px_18px_18px_18px] bg-part-bub px-4 py-3 text-[14.5px] leading-snug text-part-ink">
+              {message.content}
+            </div>
+          </div>
         );
       })}
 
       {mediatorThinking ? (
-        <div className="flex flex-col items-center gap-1.5" aria-live="polite">
-          <div className="flex items-center gap-2 rounded-full border border-primary/15 bg-card/80 px-4 py-2.5 shadow-sm">
-            <Sparkles className="size-3.5 text-primary" aria-hidden />
-            <span className="flex gap-1">
+        <div className="animate-fade py-1.5 text-center" aria-live="polite">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-border bg-panel2 px-[18px] py-2.5">
+            <span className="inline-flex gap-1">
               <Dot />
-              <Dot delay="150ms" />
-              <Dot delay="300ms" />
+              <Dot delay="0.2s" />
+              <Dot delay="0.4s" />
+            </span>
+            <span className="text-[13px] italic text-muted-foreground">
+              The mediator is reflecting…
             </span>
           </div>
-          <p className="text-xs text-muted-foreground/80">
-            Mediator is reflecting…
-          </p>
         </div>
       ) : null}
     </div>
   );
 }
 
-function Dot({ delay = "0ms" }: { delay?: string }) {
+function Dot({ delay = "0s" }: { delay?: string }) {
   return (
     <span
-      className="size-1.5 animate-bounce rounded-full bg-primary/70"
-      style={{ animationDelay: delay, animationDuration: "1s" }}
+      className="size-1.5 rounded-full bg-blush"
+      style={{
+        animation: "wf-typing 1.3s ease-in-out infinite",
+        animationDelay: delay,
+      }}
     />
   );
 }

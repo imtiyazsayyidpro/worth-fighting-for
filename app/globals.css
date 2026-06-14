@@ -2,179 +2,172 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme="night"] *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-lora);
+  /* shadcn token bridge → First Light */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--panel);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--panel);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--bg);
+  --color-secondary: var(--panel2);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--panel2);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--blush-soft);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--blushd);
+  --color-border: var(--line);
+  --color-input: var(--line2);
+  --color-ring: var(--blush);
+
+  /* First Light palette, exposed as utilities */
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel2);
+  --color-ink: var(--ink);
+  --color-faint: var(--faint);
+  --color-line2: var(--line2);
+  --color-blush: var(--blush);
+  --color-blushd: var(--blushd);
+  --color-blush-soft: var(--blush-soft);
+  --color-sage: var(--sage);
+  --color-sage-soft: var(--sage-soft);
+  --color-you-bub: var(--you-bub);
+  --color-you-ink: var(--you-ink);
+  --color-part-bub: var(--part-bub);
+  --color-part-ink: var(--part-ink);
+  --color-field: var(--field);
+
+  --font-sans: var(--font-mulish);
+  --font-heading: var(--font-marcellus);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-heading: var(--font-display);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
 }
 
-:root {
-  --radius: 0.75rem;
+/* ── First Light — Day (default) ───────────────────────────── */
+:root,
+[data-theme="day"] {
+  --radius: 14px;
+  --bg: #fcf8f6;
+  --bg2: #f6eeea;
+  --panel: #ffffff;
+  --panel2: #fbf6f4;
+  --ink: #3a2e38;
+  --muted: #8b7f88;
+  --faint: #b7aeb4;
+  --line: rgba(58, 46, 56, 0.1);
+  --line2: rgba(58, 46, 56, 0.17);
+  --blush: #c98e86;
+  --blushd: #b6796f;
+  --blush-soft: #f0e6e4;
+  --sage: #9fb0a1;
+  --sage-soft: #e7ede7;
+  --you-bub: #e7ede7;
+  --you-ink: #2e382e;
+  --part-bub: #f0e6e4;
+  --part-ink: #3a2e38;
+  --orb1: #f8ddd6;
+  --orb2: #d69e96;
+  --orb-glow: rgba(214, 158, 150, 0.5);
+  --shadow: rgba(58, 46, 56, 0.2);
+  --field: #ffffff;
+}
 
-  /* warm ivory / blush white (#FAF6F8) */
-  --background: oklch(0.9768 0.005 345.28);
-  /* deep plum-brown (#4A3B52) */
-  --foreground: oklch(0.3776 0.043 313.68);
-
-  /* soft white cards, a touch warm */
-  --card: oklch(0.9921 0.003 345.28);
-  --card-foreground: oklch(0.3776 0.043 313.68);
-  --popover: oklch(0.9921 0.003 345.28);
-  --popover-foreground: oklch(0.3776 0.043 313.68);
-
-  /* dusty rose / mauve pink (#C17B98) */
-  --primary: oklch(0.6646 0.0943 353.54);
-  --primary-foreground: oklch(0.9793 0.0125 345.47);
-
-  /* soft lavender (#C9B8E8) */
-  --secondary: oklch(0.8126 0.069 301.06);
-  --secondary-foreground: oklch(0.3776 0.043 313.68);
-
-  /* pale blush muted (#F3E4EC) */
-  --muted: oklch(0.9331 0.0194 343.96);
-  --muted-foreground: oklch(0.5954 0.0435 318.01);
-
-  /* light lavender accent */
-  --accent: oklch(0.91 0.04 301.06);
-  --accent-foreground: oklch(0.3776 0.043 313.68);
-
-  --destructive: oklch(0.577 0.245 27.325);
-
-  /* light lavender-pink borders (#E8D9EC) */
-  --border: oklch(0.903 0.0302 319.09);
-  --input: oklch(0.903 0.0302 319.09);
-  --ring: oklch(0.6646 0.0943 353.54);
-
-  --chart-1: oklch(0.6646 0.0943 353.54);
-  --chart-2: oklch(0.8126 0.069 301.06);
-  --chart-3: oklch(0.55 0.1 350);
-  --chart-4: oklch(0.72 0.1 10);
-  --chart-5: oklch(0.45 0.07 320);
-
-  --sidebar: oklch(0.9921 0.003 345.28);
-  --sidebar-foreground: oklch(0.3776 0.043 313.68);
-  --sidebar-primary: oklch(0.6646 0.0943 353.54);
-  --sidebar-primary-foreground: oklch(0.9793 0.0125 345.47);
-  --sidebar-accent: oklch(0.91 0.04 301.06);
-  --sidebar-accent-foreground: oklch(0.3776 0.043 313.68);
-  --sidebar-border: oklch(0.903 0.0302 319.09);
-  --sidebar-ring: oklch(0.6646 0.0943 353.54);
+/* ── First Light — Night ───────────────────────────────────── */
+[data-theme="night"] {
+  --bg: #1c1622;
+  --bg2: #241d2a;
+  --panel: #2a2230;
+  --panel2: #322738;
+  --ink: #f2e9ec;
+  --muted: #a99fa6;
+  --faint: #766b73;
+  --line: rgba(242, 233, 236, 0.1);
+  --line2: rgba(242, 233, 236, 0.18);
+  --blush: #dba9a1;
+  --blushd: #e8b9b1;
+  --blush-soft: #3c2d34;
+  --sage: #a9bbab;
+  --sage-soft: #2c3a31;
+  --you-bub: #2c3a31;
+  --you-ink: #e8f0e8;
+  --part-bub: #3c2d34;
+  --part-ink: #f2e9ec;
+  --orb1: #f6d9d1;
+  --orb2: #d69e96;
+  --orb-glow: rgba(214, 158, 150, 0.55);
+  --shadow: rgba(0, 0, 0, 0.55);
+  --field: #241d2a;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  html {
+    font-family: var(--font-mulish), system-ui, sans-serif;
   }
   body {
     @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
   }
   h1,
   h2,
   h3,
   h4 {
-    @apply font-heading;
+    font-family: var(--font-marcellus), serif;
+    font-weight: 400;
+  }
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
   }
 }
 
 @layer utilities {
-  /* Warm rose → mauve gradient text for display headings */
-  .text-gradient {
-    background-image: linear-gradient(
-      105deg,
-      oklch(0.62 0.11 5),
-      oklch(0.6 0.1 350),
-      oklch(0.58 0.09 300)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /* The "First Light" breathing motion vocabulary */
+  @keyframes wf-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.075); }
   }
-
-  /* Soft layered glow used behind hero/auth content */
-  .aurora {
-    background:
-      radial-gradient(
-        42rem 42rem at 12% -8%,
-        oklch(0.84 0.09 5 / 0.55),
-        transparent 60%
-      ),
-      radial-gradient(
-        38rem 38rem at 100% 8%,
-        oklch(0.86 0.07 300 / 0.5),
-        transparent 60%
-      ),
-      radial-gradient(
-        40rem 40rem at 80% 100%,
-        oklch(0.88 0.06 50 / 0.45),
-        transparent 60%
-      ),
-      radial-gradient(
-        36rem 36rem at 0% 100%,
-        oklch(0.86 0.07 320 / 0.4),
-        transparent 60%
-      );
+  @keyframes wf-glow {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 0.95; }
   }
-
-  .shadow-romantic {
-    box-shadow:
-      0 1px 2px oklch(0.5 0.05 340 / 0.06),
-      0 12px 32px -8px oklch(0.55 0.08 340 / 0.18),
-      0 2px 8px -2px oklch(0.55 0.08 340 / 0.1);
+  @keyframes wf-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
-  @keyframes float-slow {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      transform: translateY(-18px) scale(1.04);
-    }
+  @keyframes wf-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  .animate-float-slow {
-    animation: float-slow 11s ease-in-out infinite;
+  @keyframes wf-spin {
+    to { transform: rotate(360deg); }
   }
+  @keyframes wf-typing {
+    0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+  }
+  @keyframes wf-drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(0, -10px); }
+  }
+  .animate-breathe { animation: wf-breathe 6s ease-in-out infinite; }
+  .animate-glow { animation: wf-glow 5s ease-in-out infinite; }
+  .animate-rise { animation: wf-rise 0.6s ease both; }
+  .animate-fade { animation: wf-fade 0.5s ease both; }
+  .animate-drift { animation: wf-drift 7s ease-in-out infinite; }
+  .animate-wf-spin { animation: wf-spin 0.7s linear infinite; }
 }

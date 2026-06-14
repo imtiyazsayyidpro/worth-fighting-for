@@ -3,16 +3,12 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+  authFieldClass,
+  FormError,
+  Spinner,
+} from "@/components/auth/auth-card";
+import { BrandMark } from "@/components/layout/brand-mark";
 
 type SubmitState = {
   status: "idle" | "submitting" | "error";
@@ -33,16 +29,16 @@ export function InvitePartnerForm() {
     const response = await fetch("/api/partnership/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: formData.get("email"),
-      }),
+      body: JSON.stringify({ email: formData.get("email") }),
     });
 
     if (!response.ok) {
       const body = await response.json().catch(() => null);
       setSubmitState({
         status: "error",
-        message: body?.error ?? "Could not send invite",
+        message:
+          body?.error ??
+          "We couldn't send that invite. Double-check the email and try again.",
       });
       return;
     }
@@ -53,41 +49,45 @@ export function InvitePartnerForm() {
   const isSubmitting = submitState.status === "submitting";
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Invite your partner</CardTitle>
-        <CardDescription>
-          Send an invite to the email they used for their account.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="partner-email">Partner email</Label>
-            <Input
-              id="partner-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="partner@example.com"
-              className="h-11 rounded-xl px-4 text-base md:text-base"
-              required
-            />
-          </div>
+    <div className="rounded-[22px] border border-border bg-card p-[30px] shadow-[0_20px_50px_-38px_var(--shadow)]">
+      <div className="mb-1.5 flex items-center gap-2.5">
+        <BrandMark size={22} color="var(--blush)" />
+        <h2 className="font-heading text-2xl">Invite your partner</h2>
+      </div>
+      <p className="mb-5 text-[15px] leading-relaxed text-muted-foreground">
+        Worth Fighting For is just for the two of you. Send an invitation and you
+        can begin the moment they join.
+      </p>
 
-          {submitState.message ? (
-            <p className="text-sm text-destructive">{submitState.message}</p>
-          ) : null}
+      {submitState.status === "error" ? (
+        <FormError>{submitState.message}</FormError>
+      ) : null}
 
-          <Button
-            className="h-11 rounded-xl px-4"
-            disabled={isSubmitting}
-            type="submit"
-          >
-            {isSubmitting ? "Sending invite..." : "Send invite"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+        <input
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Their email address"
+          disabled={isSubmitting}
+          className={authFieldClass}
+          required
+        />
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex items-center justify-center gap-2.5 rounded-full bg-foreground py-[15px] text-[15px] font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-70"
+        >
+          {isSubmitting ? (
+            <>
+              <Spinner />
+              Sending…
+            </>
+          ) : (
+            "Send invite"
+          )}
+        </button>
+      </form>
+    </div>
   );
 }

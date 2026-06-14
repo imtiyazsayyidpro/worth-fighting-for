@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowUp } from "lucide-react";
 import {
   FormEvent,
   KeyboardEvent,
@@ -14,40 +13,42 @@ import { cn } from "@/lib/utils";
 type MessageInputProps = {
   sessionId: string;
   onMessageSent: () => Promise<void> | void;
+  /** Show the message in the transcript immediately, before the request resolves. */
+  onOptimisticSend?: (text: string) => void;
   canSend: boolean;
   isPaused: boolean;
-  partnerName: string;
+  placeholder: string;
 };
 
 export function MessageInput({
   sessionId,
   onMessageSent,
+  onOptimisticSend,
   canSend,
   isPaused,
-  partnerName,
+  placeholder,
 }: MessageInputProps) {
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Grow the textarea with its content, up to a sensible cap.
   useEffect(() => {
     const node = textareaRef.current;
     if (!node) return;
     node.style.height = "auto";
-    node.style.height = `${Math.min(node.scrollHeight, 200)}px`;
+    node.style.height = `${Math.min(node.scrollHeight, 120)}px`;
   }, [content]);
 
   async function send() {
     const trimmedContent = content.trim();
+    if (!canSend || isPaused || !trimmedContent || isSending) return;
 
-    if (!canSend || isPaused || !trimmedContent || isSending) {
-      return;
-    }
-
-    setIsSending(true);
+    // Clear the box and show the message in the transcript right away.
+    setContent("");
     setError(null);
+    setIsSending(true);
+    onOptimisticSend?.(trimmedContent);
 
     const response = await fetch(`/api/sessions/${sessionId}/messages`, {
       method: "POST",
@@ -58,11 +59,13 @@ export function MessageInput({
     if (!response.ok) {
       const body = await response.json().catch(() => null);
       setError(body?.error ?? "Could not send message");
+      setContent(trimmedContent); // give the words back
       setIsSending(false);
+      // resync the transcript so the un-sent message doesn't linger
+      await onMessageSent();
       return;
     }
 
-    setContent("");
     await onMessageSent();
     setIsSending(false);
     textareaRef.current?.focus();
@@ -81,47 +84,37 @@ export function MessageInput({
   }
 
   const hasContent = content.trim().length > 0;
-  const effectivelyDisabled = isPaused || !canSend;
+  const disabled = isPaused || !canSend;
 
   return (
     <form onSubmit={handleSubmit}>
       <div
         className={cn(
-          "flex items-end gap-2 rounded-3xl border bg-card p-2 shadow-romantic transition-colors",
-          !effectivelyDisabled
-            ? "border-border/70 focus-within:border-primary/50"
-            : "border-border/50 opacity-70",
+          "flex items-end gap-2.5 rounded-[22px] border border-line2 bg-field py-2 pl-4 pr-2 transition-opacity",
+          disabled && "opacity-70",
         )}
       >
         <textarea
           ref={textareaRef}
-          className="max-h-50 min-h-9 flex-1 resize-none bg-transparent px-3 py-1.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground md:text-sm"
-          disabled={isSending || effectivelyDisabled}
-          onChange={(event) => setContent(event.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={
-            isPaused
-              ? "Session paused — click Resume to continue"
-              : canSend
-                ? "Share what's on your mind…"
-                : `Waiting for ${partnerName}…`
-          }
           rows={1}
           value={content}
+          disabled={isSending || disabled}
+          onChange={(event) => setContent(event.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="max-h-[120px] min-h-[24px] flex-1 resize-none bg-transparent py-1.5 text-[14.5px] leading-snug outline-none placeholder:text-faint"
         />
-
         <button
           type="submit"
-          disabled={isSending || effectivelyDisabled || !hasContent}
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/85 disabled:pointer-events-none disabled:opacity-40"
+          disabled={isSending || disabled || !hasContent}
           aria-label="Send message"
+          className="grid size-[38px] flex-none place-items-center rounded-full bg-foreground text-[16px] text-background transition-all hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
         >
-          <ArrowUp className={cn("size-5", isSending && "animate-pulse")} aria-hidden />
+          ↑
         </button>
       </div>
-
       {error ? (
-        <p className="mt-2 px-1 text-sm text-destructive">{error}</p>
+        <p className="mt-2 px-1 text-sm text-blushd">{error}</p>
       ) : null}
     </form>
   );

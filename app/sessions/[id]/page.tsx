@@ -1,5 +1,3 @@
-import { ArrowLeft, Sparkles } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { SessionRoom } from "@/components/session/session-room";
@@ -41,33 +39,7 @@ export default async function SessionPage({
   const partnerName = partner?.displayName ?? "your partner";
 
   return (
-    <main className="flex h-dvh flex-col text-foreground">
-      <header className="border-b border-border/50 bg-card/60 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link
-            href="/dashboard"
-            className="inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft className="size-5" aria-hidden />
-          </Link>
-
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary to-secondary text-primary-foreground shadow-romantic">
-              <Sparkles className="size-5" aria-hidden />
-            </span>
-            <div className="min-w-0">
-              <p className="truncate font-heading text-lg font-semibold leading-tight">
-                Your mediator
-              </p>
-              <p className="truncate text-sm text-muted-foreground">
-                A conversation with {partnerName}
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <main className="flex h-dvh flex-col">
       <SessionRoom
         currentUserId={user.id}
         currentUserSlot={currentUserSlot}

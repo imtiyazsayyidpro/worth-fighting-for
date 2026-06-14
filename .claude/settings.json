@@ -16,7 +16,13 @@
       "Bash(npm install *)",
       "Bash(node -e ' *)",
       "Bash(curl -s -o /tmp/wff-home.html -w \"%{http_code}\" http://localhost:3000/)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(curl -sL \"https://api.anthropic.com/v1/design/h/UpQC-sMKGKM0BIN9Nws9Zw\" -o /tmp/design_index.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -sL --compressed \"https://api.anthropic.com/v1/design/h/UpQC-sMKGKM0BIN9Nws9Zw\" -o /tmp/design_index.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -sL -D - \"https://api.anthropic.com/v1/design/h/UpQC-sMKGKM0BIN9Nws9Zw\" -o /tmp/design_raw.bin)",
+      "Bash(xxd /tmp/design_raw.bin)",
+      "Bash(mkdir -p /tmp/wff_design)",
+      "Bash(tar -xzf /tmp/design_raw.bin -C /tmp/wff_design)"
     ]
   }
 }

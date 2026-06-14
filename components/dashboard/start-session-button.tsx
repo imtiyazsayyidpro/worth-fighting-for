@@ -1,10 +1,9 @@
 "use client";
 
-import { MessageCircleHeart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/auth/auth-card";
 
 export function StartSessionButton() {
   const router = useRouter();
@@ -15,9 +14,7 @@ export function StartSessionButton() {
     setIsStarting(true);
     setError(null);
 
-    const response = await fetch("/api/sessions", {
-      method: "POST",
-    });
+    const response = await fetch("/api/sessions", { method: "POST" });
 
     if (!response.ok) {
       const body = await response.json().catch(() => null);
@@ -31,18 +28,25 @@ export function StartSessionButton() {
   }
 
   return (
-    <div className="space-y-2">
-      <Button
-        className="h-12 gap-2 rounded-xl px-6 text-base shadow-romantic"
-        disabled={isStarting}
-        onClick={handleStartSession}
+    <div>
+      <button
         type="button"
+        onClick={handleStartSession}
+        disabled={isStarting}
+        className="inline-flex items-center gap-2.5 rounded-full bg-foreground px-[30px] py-[15px] text-[15.5px] font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-70"
       >
-        <MessageCircleHeart className="size-5" aria-hidden />
-        {isStarting ? "Opening…" : "Start a session"}
-      </Button>
-
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {isStarting ? (
+          <>
+            <Spinner />
+            Opening…
+          </>
+        ) : (
+          <>
+            Start a session <span className="text-[17px]">→</span>
+          </>
+        )}
+      </button>
+      {error ? <p className="mt-2 text-sm text-blushd">{error}</p> : null}
     </div>
   );
 }

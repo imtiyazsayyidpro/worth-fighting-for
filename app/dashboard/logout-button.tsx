@@ -3,32 +3,25 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-
 export function LogoutButton() {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
     setIsLoggingOut(true);
-
-    await fetch("/api/auth/logout", {
-      method: "POST",
-    });
-
+    await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();
   }
 
   return (
-    <Button
-      className="h-10 rounded-xl px-4"
-      disabled={isLoggingOut}
-      onClick={handleLogout}
+    <button
       type="button"
-      variant="outline"
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+      className="text-[13.5px] text-muted-foreground transition-colors hover:text-foreground disabled:opacity-60"
     >
-      {isLoggingOut ? "Logging out..." : "Log out"}
-    </Button>
+      {isLoggingOut ? "Logging out…" : "Log out"}
+    </button>
   );
 }

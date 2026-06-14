@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Lora } from "next/font/google";
+import { Marcellus, Mulish } from "next/font/google";
 import "./globals.css";
-import { DecorativeBackground } from "@/components/layout/decorative-background";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-display",
+const marcellus = Marcellus({
+  variable: "--font-marcellus",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400"],
 });
 
-const lora = Lora({
-  variable: "--font-lora",
+const mulish = Mulish({
+  variable: "--font-mulish",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const siteUrl = "https://worth-fighting-for.imtiyazsayyid.in";
@@ -68,12 +67,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${lora.variable} h-full antialiased`}
+      data-theme="day"
+      className={`${marcellus.variable} ${mulish.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <DecorativeBackground />
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

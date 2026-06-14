@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-import { AuthCard } from "@/components/auth/auth-card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  AuthCard,
+  authFieldClass,
+  FormError,
+  Spinner,
+} from "@/components/auth/auth-card";
 
 type SubmitState = {
   status: "idle" | "submitting" | "error";
@@ -52,14 +54,17 @@ export default function LoginPage() {
   return (
     <AuthCard
       title="Welcome back"
-      subtitle="Step back into your shared space."
-      quote="The best thing to hold onto in life is each other."
-      quoteAuthor="Audrey Hepburn"
+      subtitle="Log in to return to the two of you."
+      panelQuote="Welcome back. Take a breath — you're here."
+      panelSub="Whatever brought you back tonight, you don't have to carry it alone."
+      panelFootnote="Private · just the two of you"
+      panelGradient="linear-gradient(165deg, var(--sage-soft), var(--blush-soft))"
+      glowAt="40% 40%"
       footer={
         <>
           New here?{" "}
           <Link
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-bold text-blushd hover:underline"
             href="/register"
           >
             Create an account
@@ -67,56 +72,52 @@ export default function LoginPage() {
         </>
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            Email
-          </Label>
-          <Input
-            id="email"
+      {submitState.status === "error" ? (
+        <FormError>{submitState.message}</FormError>
+      ) : null}
+
+      <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit}>
+        <label className="block">
+          <span className="mb-[7px] block text-[13px] font-semibold">Email</span>
+          <input
             name="email"
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className="h-12 rounded-xl px-4 text-base md:text-base"
+            disabled={isSubmitting}
+            className={authFieldClass}
             required
           />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium">
+        </label>
+        <label className="block">
+          <span className="mb-[7px] flex justify-between text-[13px] font-semibold">
             Password
-          </Label>
-          <Input
-            id="password"
+            <span className="font-medium text-faint">Forgot?</span>
+          </span>
+          <input
             name="password"
             type="password"
             autoComplete="current-password"
             placeholder="••••••••"
-            className="h-12 rounded-xl px-4 text-base md:text-base"
+            disabled={isSubmitting}
+            className={authFieldClass}
             required
           />
-        </div>
-
-        {submitState.message ? (
-          <p
-            className={`text-sm ${
-              submitState.status === "error"
-                ? "text-destructive"
-                : "text-primary"
-            }`}
-          >
-            {submitState.message}
-          </p>
-        ) : null}
-
-        <Button
+        </label>
+        <button
           type="submit"
-          className="h-12 w-full rounded-xl text-base shadow-romantic"
           disabled={isSubmitting}
+          className="mt-1.5 flex items-center justify-center gap-2.5 rounded-full bg-foreground py-[15px] text-[15.5px] font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-70"
         >
-          {isSubmitting ? "Logging in…" : "Log in"}
-        </Button>
+          {isSubmitting ? (
+            <>
+              <Spinner />
+              Logging in…
+            </>
+          ) : (
+            "Log in"
+          )}
+        </button>
       </form>
     </AuthCard>
   );

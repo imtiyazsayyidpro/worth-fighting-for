@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ChevronRight, MessageCircleHeart } from "lucide-react";
 
+import { BrandMark } from "@/components/layout/brand-mark";
 import type { SessionStatus } from "@/lib/generated/prisma/enums";
-import { cn, formatRelativeDay, formatTime } from "@/lib/utils";
+import { formatRelativeDay, formatTime } from "@/lib/utils";
 
 export type DashboardSession = {
   id: string;
@@ -14,98 +14,67 @@ type SessionListProps = {
   sessions: DashboardSession[];
 };
 
-const statusConfig: Record<
-  SessionStatus,
-  { label: string; dot: string; text: string }
-> = {
-  ACTIVE: {
-    label: "In progress",
-    dot: "bg-emerald-500",
-    text: "text-emerald-600",
-  },
-  PAUSED: {
-    label: "Paused",
-    dot: "bg-amber-500",
-    text: "text-amber-600",
-  },
-  COMPLETED: {
-    label: "Resolved",
-    dot: "bg-primary",
-    text: "text-primary",
-  },
-};
+function StatusPill({ status }: { status: SessionStatus }) {
+  if (status === "ACTIVE") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-blush-soft px-3 py-1.5 text-xs font-bold text-blushd">
+        <span className="animate-glow size-1.5 rounded-full bg-blushd" />
+        In progress
+      </span>
+    );
+  }
+  if (status === "PAUSED") {
+    return (
+      <span className="rounded-full border border-border bg-panel2 px-3 py-1.5 text-xs font-bold text-muted-foreground">
+        Paused
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full bg-sage-soft px-3 py-1.5 text-xs font-bold text-sage">
+      Resolved
+    </span>
+  );
+}
 
 export function SessionList({ sessions }: SessionListProps) {
   return (
-    <section className="space-y-4">
-      <div className="flex items-baseline justify-between">
-        <h2 className="font-heading text-2xl font-semibold tracking-tight">
-          Your conversations
-        </h2>
-        {sessions.length > 0 ? (
-          <span className="text-sm text-muted-foreground">
-            {sessions.length} {sessions.length === 1 ? "session" : "sessions"}
-          </span>
-        ) : null}
+    <section>
+      <div className="mb-3 flex items-center justify-between px-0.5">
+        <h3 className="font-heading text-[18px]">Your conversations</h3>
       </div>
 
       {sessions.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border/70 bg-card/60 px-6 py-14 text-center backdrop-blur-sm">
-          <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary/15 to-secondary/25 text-primary">
-            <MessageCircleHeart className="size-6" aria-hidden />
-          </span>
-          <p className="font-heading text-lg font-medium text-foreground">
-            No conversations yet
-          </p>
-          <p className="max-w-xs text-sm text-muted-foreground">
-            When you&rsquo;re ready, start a session and your mediator will help
-            you talk it through — together.
+        <div className="rounded-[18px] border border-dashed border-line2 bg-card px-6 py-[38px] text-center">
+          <div className="mx-auto mb-3.5 grid size-10 place-items-center rounded-full bg-bg2">
+            <BrandMark size={18} color="var(--sage)" />
+          </div>
+          <p className="mx-auto max-w-[330px] text-[15px] leading-relaxed text-muted-foreground">
+            No sessions yet. When something feels worth talking through — or you
+            just want to feel close — start your first together.
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {sessions.map((session) => {
-            const status = statusConfig[session.status];
-            return (
-              <li key={session.id}>
-                <Link
-                  href={`/sessions/${session.id}`}
-                  className="group flex items-center gap-4 rounded-2xl border border-border/60 bg-card/70 p-4 shadow-romantic backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-card"
-                >
-                  <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-primary/15 to-secondary/25 text-primary">
-                    <MessageCircleHeart className="size-5" aria-hidden />
+        <div className="flex flex-col gap-2.5">
+          {sessions.map((session) => (
+            <Link
+              key={session.id}
+              href={`/sessions/${session.id}`}
+              className="flex items-center gap-3.5 rounded-[16px] border border-border bg-card px-[18px] py-4 transition-colors hover:border-line2"
+            >
+              <div className="flex-1">
+                <div className="text-[15px] font-bold">
+                  {formatRelativeDay(session.createdAt)}{" "}
+                  <span className="font-medium text-faint">
+                    · {formatTime(session.createdAt)}
                   </span>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="font-heading text-base font-medium text-foreground">
-                      {formatRelativeDay(session.createdAt)}
-                    </p>
-                    <div className="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{formatTime(session.createdAt)}</span>
-                      <span aria-hidden>·</span>
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1.5 font-medium",
-                          status.text,
-                        )}
-                      >
-                        <span
-                          className={cn("size-1.5 rounded-full", status.dot)}
-                        />
-                        {status.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  <ChevronRight
-                    className="size-5 shrink-0 text-muted-foreground/60 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
-                    aria-hidden
-                  />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                </div>
+              </div>
+              <StatusPill status={session.status} />
+              <span className="text-[18px] text-faint">›</span>
+            </Link>
+          ))}
+        </div>
       )}
     </section>
   );

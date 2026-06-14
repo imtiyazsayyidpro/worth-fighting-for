@@ -2,10 +2,8 @@
 
 import { KeyboardEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Brain, Check, Pencil, Trash2, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Orb } from "@/components/layout/brand-mark";
 
 export type Memory = {
   id: string;
@@ -13,11 +11,7 @@ export type Memory = {
   createdAt: string;
 };
 
-type MemoryItemProps = {
-  memory: Memory;
-};
-
-function MemoryItem({ memory }: MemoryItemProps) {
+function MemoryItem({ memory }: { memory: Memory }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -79,100 +73,108 @@ function MemoryItem({ memory }: MemoryItemProps) {
     if (event.key === "Escape") cancelEdit();
   }
 
-  return (
-    <li className="group flex items-start gap-3 rounded-2xl border border-border/60 bg-card/70 px-4 py-3 shadow-romantic backdrop-blur-sm transition-all">
-      {editing ? (
-        <div className="flex flex-1 flex-col gap-2">
-          <Input
-            ref={inputRef}
-            defaultValue={memory.fact}
-            onKeyDown={handleKeyDown}
+  if (editing) {
+    return (
+      <div className="rounded-[15px] border border-blush bg-card px-4 py-3.5 shadow-[0_0_0_3px_var(--blush-soft)]">
+        <input
+          ref={inputRef}
+          defaultValue={memory.fact}
+          onKeyDown={handleKeyDown}
+          disabled={saving}
+          className="mb-3 w-full rounded-[10px] border border-line2 bg-field px-3 py-2.5 text-[14.5px] outline-none focus:border-blush"
+        />
+        {editError ? (
+          <p className="mb-2 text-xs text-blushd">{editError}</p>
+        ) : null}
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={cancelEdit}
             disabled={saving}
-            className="h-9 rounded-lg"
-          />
-          {editError ? (
-            <p className="text-xs text-destructive">{editError}</p>
-          ) : null}
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="default"
-              className="gap-1"
-              onClick={saveEdit}
-              disabled={saving}
-            >
-              <Check className="size-3.5" aria-hidden />
-              {saving ? "Saving…" : "Save"}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="gap-1"
-              onClick={cancelEdit}
-              disabled={saving}
-            >
-              <X className="size-3.5" aria-hidden />
-              Cancel
-            </Button>
-          </div>
+            className="rounded-full border border-line2 px-4 py-2 text-[13px] font-semibold transition-colors hover:bg-panel2 disabled:opacity-60"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={saveEdit}
+            disabled={saving}
+            className="rounded-full bg-foreground px-[18px] py-2 text-[13px] font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-70"
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
         </div>
-      ) : (
-        <>
-          <span className="mt-0.5 text-sm leading-relaxed text-foreground/90 flex-1">
-            {memory.fact}
-          </span>
-          <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              aria-label="Edit memory"
-              onClick={startEdit}
-            >
-              <Pencil className="size-3.5" aria-hidden />
-            </Button>
-            <Button
-              size="icon-sm"
-              variant="destructive"
-              aria-label="Delete memory"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
-              <Trash2 className="size-3.5" aria-hidden />
-            </Button>
-          </div>
-        </>
-      )}
-    </li>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group flex items-start gap-3 rounded-[15px] border border-border bg-card px-4 py-[15px] transition-colors hover:border-line2">
+      <span className="mt-[7px] size-[7px] flex-none rounded-full bg-blush" />
+      <p className="flex-1 text-[14.5px] leading-snug">{memory.fact}</p>
+      <div className="flex flex-none gap-1">
+        <button
+          type="button"
+          onClick={startEdit}
+          aria-label="Edit memory"
+          className="grid size-[30px] place-items-center rounded-lg text-[13px] text-muted-foreground transition-colors hover:bg-panel2 hover:text-foreground"
+        >
+          ✎
+        </button>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          aria-label="Delete memory"
+          className="grid size-[30px] place-items-center rounded-lg text-[15px] text-muted-foreground transition-colors hover:bg-blush-soft hover:text-blushd disabled:opacity-50"
+        >
+          ×
+        </button>
+      </div>
+    </div>
   );
 }
 
 type MemoryListProps = {
   memories: Memory[];
+  partnerName: string;
 };
 
-export function MemoryList({ memories }: MemoryListProps) {
+export function MemoryList({ memories, partnerName }: MemoryListProps) {
   if (memories.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border/70 bg-card/60 px-6 py-14 text-center backdrop-blur-sm">
-        <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary/15 to-secondary/25 text-primary">
-          <Brain className="size-6" aria-hidden />
-        </span>
-        <p className="font-heading text-lg font-medium text-foreground">
-          No memories yet
-        </p>
-        <p className="max-w-xs text-sm text-muted-foreground">
-          The mediator will pick up on things you share in sessions, or you can
-          add notes manually above.
+      <div className="rounded-[18px] border border-dashed border-line2 bg-card px-7 py-11 text-center">
+        <Orb size={58} className="mx-auto mb-[18px]" />
+        <h2 className="font-heading text-[22px]">
+          Nothing here yet — and that&rsquo;s okay.
+        </h2>
+        <p className="mx-auto mt-2.5 max-w-[360px] text-[14.5px] leading-relaxed text-muted-foreground">
+          As you and {partnerName} talk, your mediator will gently remember what
+          matters to you. You can also add a note about yourself above, anytime —
+          what helps you feel heard, what&rsquo;s hard, what you&rsquo;re working
+          on.
         </p>
       </div>
     );
   }
 
   return (
-    <ul className="space-y-2">
-      {memories.map((memory) => (
-        <MemoryItem key={memory.id} memory={memory} />
-      ))}
-    </ul>
+    <div>
+      <div className="mb-3 flex items-center gap-2 px-0.5">
+        <h2 className="font-heading text-[17px]">
+          What the mediator remembers
+        </h2>
+        <span className="text-xs text-faint">· {memories.length}</span>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        {memories.map((memory) => (
+          <MemoryItem key={memory.id} memory={memory} />
+        ))}
+      </div>
+      <p className="mt-5 px-0.5 text-[12.5px] leading-relaxed text-faint">
+        Your mediator will also quietly add to this as the two of you talk — you
+        can edit or remove anything, anytime.
+      </p>
+    </div>
   );
 }

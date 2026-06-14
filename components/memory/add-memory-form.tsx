@@ -2,10 +2,6 @@
 
 import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusCircle } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 type State = "idle" | "submitting" | "error";
 
@@ -42,25 +38,28 @@ export function AddMemoryForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <Input
-        ref={inputRef}
-        name="fact"
-        placeholder="Add a note about yourself…"
-        className="h-10 flex-1 rounded-xl px-4"
-        disabled={state === "submitting"}
-        required
-      />
-      <Button
-        type="submit"
-        size="lg"
-        className="h-10 gap-1.5 rounded-xl px-4"
-        disabled={state === "submitting"}
-      >
-        <PlusCircle className="size-4" aria-hidden />
-        {state === "submitting" ? "Adding…" : "Add"}
-      </Button>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+    <form
+      onSubmit={handleSubmit}
+      className="mb-[26px] rounded-[18px] border border-border bg-card p-4 shadow-[0_16px_40px_-36px_var(--shadow)]"
+    >
+      <div className="flex items-end gap-2.5">
+        <input
+          ref={inputRef}
+          name="fact"
+          placeholder="Add a note about yourself…"
+          disabled={state === "submitting"}
+          className="flex-1 rounded-[12px] border border-line2 bg-field px-3.5 py-3 text-[14.5px] outline-none transition-shadow placeholder:text-faint focus:border-blush focus:shadow-[0_0_0_3px_var(--blush-soft)]"
+          required
+        />
+        <button
+          type="submit"
+          disabled={state === "submitting"}
+          className="whitespace-nowrap rounded-[12px] bg-foreground px-5 py-3 text-sm font-bold text-background transition-opacity hover:opacity-90 disabled:opacity-70"
+        >
+          {state === "submitting" ? "Adding…" : "Add"}
+        </button>
+      </div>
+      {error ? <p className="mt-2 text-sm text-blushd">{error}</p> : null}
     </form>
   );
 }

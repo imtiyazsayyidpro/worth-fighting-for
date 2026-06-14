@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle, Mail, XCircle } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 
 type State = "idle" | "sending" | "sent" | "error";
 
@@ -18,22 +15,17 @@ export function VerificationBanner({ email }: VerificationBannerProps) {
   const [state, setState] = useState<State>("idle");
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
-  // Read one-shot query param feedback on mount, then clear the param from the URL
   const didInit = useRef(false);
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
 
-    if (searchParams.get("verified") === "1") {
-      // Should not normally reach here (user is now verified), but guard anyway
-      setFeedbackMessage("Your email has been verified.");
-    } else if (searchParams.get("verify_error") === "1") {
+    if (searchParams.get("verify_error") === "1") {
       setFeedbackMessage(
         "That verification link is invalid or has expired. Request a new one below.",
       );
     }
 
-    // Strip the params from the URL without a navigation
     const params = new URLSearchParams(searchParams.toString());
     params.delete("verified");
     params.delete("verify_error");
@@ -51,68 +43,54 @@ export function VerificationBanner({ email }: VerificationBannerProps) {
 
     if (response.ok) {
       setState("sent");
-      setFeedbackMessage(`Verification email sent to ${email}.`);
+      setFeedbackMessage(null);
     } else {
       setState("error");
       const body = await response.json().catch(() => null);
-      setFeedbackMessage(body?.error ?? "Could not send email. Try again later.");
+      setFeedbackMessage(
+        body?.error ?? "Could not send email. Try again later.",
+      );
     }
   }
 
   return (
-    <section
+    <div
       role="alert"
-      className="flex items-start gap-4 rounded-3xl border border-amber-200/60 bg-amber-50/60 p-6 backdrop-blur-sm dark:border-amber-800/40 dark:bg-amber-950/20"
+      className="animate-rise mb-[18px] flex items-start gap-3.5 rounded-[18px] border border-line2 bg-card p-5"
     >
-      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
-        <Mail className="size-5" aria-hidden />
+      <span className="grid size-[38px] flex-none place-items-center rounded-full bg-sage-soft">
+        <span className="size-[15px] rounded-[3px] border-[1.5px] border-sage" />
       </span>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-3">
-        <div className="space-y-1">
-          <h2 className="font-heading text-base font-semibold text-foreground">
-            Please verify your email
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            We sent a link to <span className="font-medium">{email}</span>.
-            Check your inbox (and spam folder) and click the link to verify
-            your account.
-          </p>
+      <div className="flex-1">
+        <div className="mb-1 text-[15px] font-bold">
+          Please confirm your email
         </div>
+        <p className="mb-3 text-[13.5px] leading-snug text-muted-foreground">
+          We&rsquo;ve sent a verification link to{" "}
+          <strong className="text-foreground">{email}</strong>. Confirming keeps
+          your account — and your conversations — safe.
+        </p>
+
+        {state === "sent" ? (
+          <div className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-sage">
+            <span className="size-1.5 rounded-full bg-sage" />
+            Sent — check your inbox.
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={state === "sending"}
+            className="rounded-full border border-line2 px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-panel2 disabled:opacity-60"
+          >
+            {state === "sending" ? "Sending…" : "Resend verification email"}
+          </button>
+        )}
 
         {feedbackMessage ? (
-          <div className="flex items-start gap-2 text-sm">
-            {state === "sent" ? (
-              <CheckCircle className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-hidden />
-            ) : (
-              <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden />
-            )}
-            <span
-              className={
-                state === "sent" ? "text-emerald-700" : "text-destructive"
-              }
-            >
-              {feedbackMessage}
-            </span>
-          </div>
+          <p className="mt-2 text-[13px] text-blushd">{feedbackMessage}</p>
         ) : null}
-
-        <div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-xl"
-            disabled={state === "sending" || state === "sent"}
-            onClick={handleResend}
-          >
-            {state === "sending"
-              ? "Sending…"
-              : state === "sent"
-                ? "Email sent"
-                : "Resend verification email"}
-          </Button>
-        </div>
       </div>
-    </section>
+    </div>
   );
 }
