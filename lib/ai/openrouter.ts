@@ -64,7 +64,7 @@ const OPENROUTER_CHAT_COMPLETIONS_URL =
 
 export async function getChatCompletion(
   messages: OpenRouterMessage[],
-  model = process.env.OPENROUTER_MODEL ?? "anthropic/claude-3.5-sonnet",
+  model = process.env.OPENROUTER_MODEL ?? "anthropic/claude-opus-4.8",
   tools?: OpenRouterTool[],
   tool_choice?: OpenRouterToolChoice,
 ) {

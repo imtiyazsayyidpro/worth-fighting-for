@@ -39,6 +39,7 @@ export function SessionRoom({
   const [pauseLoading, setPauseLoading] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevMessageCountRef = useRef<number | null>(null);
 
   const refreshMessages = useCallback(async () => {
     const response = await fetch(`/api/sessions/${sessionId}/messages`, {
@@ -60,11 +61,28 @@ export function SessionRoom({
     return () => window.clearInterval(interval);
   }, [refreshMessages]);
 
+  // Scroll to the bottom only when arriving at the session (first render) or
+  // when a new message actually appears — not on every poll refresh, which
+  // would yank the view down and stop the reader mid-sentence.
   useEffect(() => {
     const node = scrollRef.current;
     if (!node) return;
-    node.scrollTo({ top: node.scrollHeight, behavior: "smooth" });
-  }, [messages, currentSpeaker]);
+
+    const count = messages.length;
+    const prevCount = prevMessageCountRef.current;
+    prevMessageCountRef.current = count;
+
+    if (prevCount === null) {
+      // Returning to / opening the session: jump straight to the latest.
+      node.scrollTo({ top: node.scrollHeight });
+      return;
+    }
+
+    if (count > prevCount) {
+      // A genuinely new message landed: ease down to it.
+      node.scrollTo({ top: node.scrollHeight, behavior: "smooth" });
+    }
+  }, [messages]);
 
   // Show the just-sent message immediately, then let the mediator reflect.
   const addOptimistic = useCallback(
